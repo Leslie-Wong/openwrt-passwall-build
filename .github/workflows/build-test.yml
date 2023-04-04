@@ -15,7 +15,6 @@ on:
 
 jobs:
   release:
-    name: Build for ${{ github.event.inputs.arch }}-${{ github.event.inputs.sdk }}
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -65,9 +64,6 @@ jobs:
           # https://github.com/openwrt/packages/issues/19511
           - arch: mipsel_24kc_24kf
             sdk: snapshot
-            
-  build:
-    runs-on: ubuntu-latest
     steps:
       - name: Build package
         uses: openwrt/gh-action-sdk@master
