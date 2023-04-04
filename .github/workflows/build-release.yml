@@ -14,35 +14,6 @@ jobs:
       matrix:
         arch:
           - aarch64_cortex-a53
-          - aarch64_cortex-a72
-          - aarch64_generic
-          - arm_arm1176jzf-s_vfp
-          - arm_arm926ej-s
-          - arm_cortex-a15_neon-vfpv4
-          - arm_cortex-a5_vfpv4
-          - arm_cortex-a7
-          - arm_cortex-a7_neon-vfpv4
-          - arm_cortex-a7_vfpv4
-          - arm_cortex-a8_vfpv3
-          - arm_cortex-a9
-          - arm_cortex-a9_neon
-          - arm_cortex-a9_vfpv3-d16
-          - arm_fa526
-          - arm_mpcore
-          - arm_xscale
-          - i386_pentium-mmx
-          - i386_pentium4
-          - mips64_octeonplus
-          - mips_24kc
-          - mips_4kec
-          - mips_mips32
-          - mipsel_24kc
-          - mipsel_24kc_24kf
-          - mipsel_74kc
-          - mipsel_mips32
-          - powerpc_464fp
-          - powerpc_8548
-          - x86_64
         sdk:
           - snapshot
           - openwrt-22.03
@@ -76,7 +47,7 @@ jobs:
           ARCH: ${{ matrix.arch }}-${{ matrix.sdk }}
           EXTRA_FEEDS: >-
             src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall^${{ steps.ver.outputs.pkgs }}
-            src-git|passwall_luci|https://github.com/xiaorouji/openwrt-passwall^${{ steps.ver.outputs.luci }}
+            src-git|passwall_luci|https://github.com/Leslie-Wong/openwrt-passwall^${{ steps.ver.outputs.luci }}
             src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2^${{ steps.ver.outputs.passwall2 }}
           KEY_BUILD: ${{ secrets.SIGN_PRIV_KEY }}
           V: s
@@ -130,12 +101,12 @@ jobs:
           done
           cp passwall.pub dist
 
-      - name: Deploy
-        uses: Burnett01/rsync-deployments@5.2.1
-        with:
-          switches: -avz --delete --exclude-from=archived.txt
-          path: dist/
-          remote_path: /storage/groups/o/op/openwrt-passwall-build/
-          remote_host: storage.osdn.net
-          remote_user: ${{ secrets.OSDN_DEPLOY_USER }}
-          remote_key: ${{ secrets.OSDN_DEPLOY_KEY }}
+#       - name: Deploy
+#         uses: Burnett01/rsync-deployments@5.2.1
+#         with:
+#           switches: -avz --delete --exclude-from=archived.txt
+#           path: dist/
+#           remote_path: /storage/groups/o/op/openwrt-passwall-build/
+#           remote_host: storage.osdn.net
+#           remote_user: ${{ secrets.OSDN_DEPLOY_USER }}
+#           remote_key: ${{ secrets.OSDN_DEPLOY_KEY }}
