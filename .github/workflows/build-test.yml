@@ -11,7 +11,7 @@ on:
       sdk_version:
         description: 'SDK version'
         required: true
-        default: snapshot
+        default: openwrt-22.03
 
 jobs:
   build:
