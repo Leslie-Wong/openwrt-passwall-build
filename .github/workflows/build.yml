@@ -32,12 +32,12 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         
-#     - name: Configure sdk
-#       run: cp ./openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/.config
+    - name: Configure sdk
+      run: cp ./openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/.config ./
       
     - name: Install dependencies
       run: |
-        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion git-core gcc-multilib libelf-dev autoconf automake libtool
+        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc-s1 libc6-dev-i386 subversion git-core gcc-multilib libelf-dev autoconf automake libtool
         sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
         
