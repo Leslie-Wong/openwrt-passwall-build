@@ -1,72 +1,48 @@
-name: Build
-
+name: luci-app-passwall CI
 on:
-  repository_dispatch:
-  workflow_dispatch:
-  schedule:
-    - cron: 33 22 * * *
+  release:
+    types: [published]
+  
+  push:
+    branches: 
+      - master
 
+      
 jobs:
   build:
-    name: Build ${{ matrix.arch }}
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        arch:
-          - aarch64_cortex-a53
-#           - aarch64_cortex-a72
-#           - aarch64_generic
-#           - arm_arm1176jzf-s_vfp
-#           - arm_arm926ej-s
-#           - arm_cortex-a15_neon-vfpv4
-#           - arm_cortex-a5_vfpv4
-#           - arm_cortex-a7
-#           - arm_cortex-a7_neon-vfpv4
-#           - arm_cortex-a8_vfpv3
-#           - arm_cortex-a9
-#           - arm_cortex-a9_neon
-#           - arm_cortex-a9_vfpv3-d16
-#           - arm_fa526
-#           - arm_mpcore
-#           - arm_xscale
-#           - i386_pentium-mmx
-#           - i386_pentium4
-#           - mips64_octeonplus
-#           - mips_24kc
-#           - mips_4kec
-#           - mips_mips32
-#           - mipsel_24kc
-#           - mipsel_24kc_24kf
-#           - mipsel_74kc
-#           - mipsel_mips32
-#           - x86_64
-
+    
+    env:
+      URL: https://downloads.openwrt.org/snapshots/targets/mediatek/filogic/openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+    
     steps:
-      - uses: actions/checkout@v3
-        with:
-          fetch-depth: 0
+    - name: Checkout - clone repository
+      uses: actions/checkout@v1
+    
+    - name: Download and untar sdk
+      run: |
+        wget $URL
+        tar xvJf openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64.tar.xz
+    
+    - name: Configure sdk
+      run: cp ./openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/.config
+      
+    - name: Install dependencies
+      run: |
+        sudo -E apt-get -y install build-essential asciidoc binutils bzip2 gawk gettext git libncurses5-dev libz-dev patch unzip zlib1g-dev lib32gcc1 libc6-dev-i386 subversion git-core gcc-multilib libelf-dev autoconf automake libtool
+        sudo ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime
 
-      - name: Building packages
-        uses: openwrt/gh-action-sdk@master
-        env:
-          ARCH: ${{ matrix.arch }}-openwrt-22.03
-          EXTRA_FEEDS: >-
-            src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall^${{ steps.ver.outputs.pkgs }}
-            src-git|passwall_luci|https://github.com/Leslie-Wong/openwrt-passwall^${{ steps.ver.outputs.luci }}
-            src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2^${{ steps.ver.outputs.passwall2 }}
-          NO_REFRESH_CHECK: true
-
-      - name: Upload artifacts
-        uses: actions/upload-artifact@v3
-        with:
-          name: ${{ matrix.arch }}
-          path: bin/packages/${{ matrix.arch }}/packages_ci/*.ipk
-
-      - name: Upload packages
-        uses: ncipollo/release-action@v1
-        with:
-          token: ${{ secrets.workflow_token }}
-          allowUpdates: true
-          replacesArtifacts: true
-          artifacts: "bin/packages/${{ matrix.arch }}/packages_ci/*.ipk"
+        
+    - name: Clone package
+      run: |
+        cd openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/package/
+        git clone https://github.com/Leslie-Wong/luci-app-passwall.git
+    - name: Build ipk
+      run: |
+        cd openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64
+        make package/luci-app-passwall/compile V=99
+    - name: Upload - push to artifact file
+      uses: actions/upload-artifact@v1
+      with:
+        name: luci-app-passwall
+        path: openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/bin/packages/*/base
