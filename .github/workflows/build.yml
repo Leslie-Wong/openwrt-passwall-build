@@ -3,7 +3,6 @@ name: Build
 on:
   repository_dispatch:
   workflow_dispatch:
-    
   schedule:
     - cron: 33 22 * * *
 
@@ -48,16 +47,14 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Get v2ray-geodata
-        run: |
-          git clone https://github.com/sbwml/v2ray-geodata
-
       - name: Building packages
-        uses: sbwml/openwrt-gh-action-sdk@go1.20
+        uses: openwrt/gh-action-sdk@master
         env:
           ARCH: ${{ matrix.arch }}-openwrt-22.03
-          FEEDNAME: packages_ci
-          PACKAGES: luci-app-mosdns
+          EXTRA_FEEDS: >-
+            src-git|passwall_packages|https://github.com/xiaorouji/openwrt-passwall^${{ steps.ver.outputs.pkgs }}
+            src-git|passwall_luci|https://github.com/Leslie-Wong/openwrt-passwall^${{ steps.ver.outputs.luci }}
+            src-git|passwall2|https://github.com/xiaorouji/openwrt-passwall2^${{ steps.ver.outputs.passwall2 }}
           NO_REFRESH_CHECK: true
 
       - name: Upload artifacts
