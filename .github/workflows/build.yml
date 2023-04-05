@@ -32,8 +32,8 @@ jobs:
         TELEGRAM_CHAT_ID: ${{ secrets.TELEGRAM_CHAT_ID }}
         TELEGRAM_BOT_TOKEN: ${{ secrets.TELEGRAM_BOT_TOKEN }}
         
-    - name: Configure sdk
-      run: cp ./openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/.config
+#     - name: Configure sdk
+#       run: cp ./openwrt-sdk-mediatek-filogic_gcc-12.2.0_musl.Linux-x86_64/.config
       
     - name: Install dependencies
       run: |
